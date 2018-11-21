@@ -1,8 +1,8 @@
 """
     "Simple" Car model, car parking task
 """
-from envs.tarski_env import Tarski_Env
-from envs.utils import huber
+from yowie_gym.tarski_env import Tarski_Env
+from yowie_gym.utils import huber
 
 import tarski
 from tarski.theories import Theory

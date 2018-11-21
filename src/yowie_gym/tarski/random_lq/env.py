@@ -1,7 +1,7 @@
 """
     Linear System with Quadratic Cost
 """
-from envs.tarski_env import Tarski_Env
+from yowie_gym.tarski_env import Tarski_Env
 
 import tarski
 from tarski.theories import Theory

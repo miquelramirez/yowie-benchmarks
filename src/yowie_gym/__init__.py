@@ -2,8 +2,8 @@
 # pylint: disable=
 
 from gym.envs.registration import register
-import envs.tarski.random_lq
-import envs.tarski.car_park
-import envs.tarski.uav_platoon
-import envs.tarski.auv_navigation
-import envs.bullet
+import yowie_gym.tarski.random_lq
+import yowie_gym.tarski.car_park
+import yowie_gym.tarski.uav_platoon
+import yowie_gym.tarski.auv_navigation
+import yowie_gym.bullet

@@ -1,7 +1,7 @@
 """
     AUV recovery task, after Fernandez-Gonzalez et al 2018
 """
-from envs.tarski_env import Tarski_Env
+from yowie_gym.tarski_env import Tarski_Env
 
 import tarski
 from tarski.theories import Theory
@@ -24,7 +24,7 @@ class Environment(Tarski_Env):
         super(Environment, self).__init__(**kwargs)
 
     def define_task(self):
-        self.language = tarski.language('random_lq', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
+        self.language = tarski.language('auv_mission', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
 
         # Sorts
         vehicle = self.language.sort('vehicle', self.language.Object)
@@ -58,7 +58,7 @@ class Environment(Tarski_Env):
             -k * sqrt(vx(auv1)*vx(auv1) + vy(auv1)*vy(auv1))
         ]
         self.ode = self.language.vector(fxu, self.language.Real)
-        
+
         # constraints
         lb_u = self.parameters['lb_u']
         ub_u = self.parameters['ub_u']
