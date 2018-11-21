@@ -16,7 +16,7 @@ from tarski.syntax.arithmetic.random import *
 
 import dilithium as dl
 
-from envs.errors import NumericError
+from yowie_gym.errors import NumericError
 
 class Environment(Tarski_Env):
 

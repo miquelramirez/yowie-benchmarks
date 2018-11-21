@@ -17,3 +17,5 @@ __pycache__/
 .pytest_cache
 *.egg-info*
 *.exe
+*checkpoint.ipynb
+notebooks/None*.png

@@ -15,7 +15,7 @@ from tarski.syntax.arithmetic import *
 from tarski.syntax.arithmetic.special import *
 from tarski.syntax.arithmetic.random import *
 
-from envs.utils import huber
+from yowie_gym.utils import huber
 
 class ReacherBulletEnv(MJCFBaseBulletEnv):
     def __init__(self):
@@ -75,7 +75,7 @@ class ReacherBulletEnv(MJCFBaseBulletEnv):
         self.robot.apply_action(a)
         self.scene.global_step()
 
-        state = self.robot.calc_state()  # sets self.to_target_vec
+        self.state = self.robot.calc_state()  # sets self.to_target_vec
 
         # electricity cost
         cu00 = a[0] * self.robot.theta_dot
@@ -86,12 +86,12 @@ class ReacherBulletEnv(MJCFBaseBulletEnv):
 
         lx = self.robot.stage_cost()
         self.reward = -(lx + lu)
-        self.HUD(state, a, False)
+        self.HUD(self.state, a, False)
         lb_x = np.array(self.parameters['lb_x']).reshape(10,1)
         ub_x = np.array(self.parameters['ub_x']).reshape(10,1)
         is_terminal = np.any(np.less(self.state, lb_x))\
             or np.any(np.greater(self.state, ub_x))
-        return state, self.reward, False, {}
+        return self.state, self.reward, False, {}
 
     def camera_adjust(self):
         x, y, z = self.robot.fingertip.pose().xyz()
