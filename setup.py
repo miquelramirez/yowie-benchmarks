@@ -26,9 +26,7 @@ setup(
             'h5py',
             'pybullet',
             'tarski',
-            'dilithium',
-            # MRJ: I think that requiring ipywidgets here is a good idea
-            'ipywidgets'
+            'dilithium'
         ],
     packages=find_packages('src'),  # include all packages under src
     package_dir={'': 'src'},  # tell distutils packages are under src
