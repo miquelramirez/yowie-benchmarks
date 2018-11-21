@@ -26,6 +26,7 @@ setup(
             'h5py',
             'pybullet',
             'tarski',
+            'dilithium',
             # MRJ: I think that requiring ipywidgets here is a good idea
             'ipywidgets'
         ],
