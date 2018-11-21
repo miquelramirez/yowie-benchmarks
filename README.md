@@ -8,5 +8,5 @@ Benchmarks for Planning, Optimal Control and Reinforcement Learning
 Invoke ```pip``` at the root of the folder where you cloned this repo
 
 ```
-$ pip install --user - .
+$ pip install --user -e .
 ```
