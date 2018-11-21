@@ -20,7 +20,7 @@ task_name = 'AUV-Navigation-v1'
 
 register(
     id=task_name,
-    entry_point='envs.tarski.auv_navigation.env:Environment',
+    entry_point='yowie_gym.tarski.auv_navigation.env:Environment',
     max_episode_steps=1000,
     kwargs={
         'I': np.array([1000.0, 500.0, 80.0]).reshape((3,1)),

@@ -36,7 +36,7 @@ for x, y, psi, v in itertools.product(X0, Y0, psi0, V0):
     initial_states += [x0]
     register(\
         id=task_name,
-        entry_point='envs.tarski.uav_platoon.env:Environment',
+        entry_point='yowie_gym.tarski.uav_platoon.env:Environment',
         max_episode_steps=1000,
         kwargs={
             'I': [x0],
@@ -59,7 +59,7 @@ for x, y, psi, v in itertools.product(X0, Y0, psi0, V0):
 # MRJ: v2 are instances where the initial state is set randomly
 register(\
     id='UAV-Platooning-v2',
-    entry_point='envs.tarski.uav_platoon.env:Environment',
+    entry_point='yowie_gym.tarski.uav_platoon.env:Environment',
     max_episode_steps=1000,
     kwargs={
         'I': initial_states,

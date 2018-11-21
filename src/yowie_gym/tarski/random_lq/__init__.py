@@ -78,7 +78,7 @@ for i in range(N):
     task_name = 'RandomLQ-{:03d}-v1'.format(i)
     register(\
         id=task_name,
-        entry_point='envs.tarski.random_lq.env:Environment',
+        entry_point='yowie_gym.tarski.random_lq.env:Environment',
         max_episode_steps=200,
         kwargs={
             'fx': fx,
@@ -94,7 +94,7 @@ for i in range(N):
     task_name = 'RandomLQ-{:03d}-v2'.format(i)
     register(\
         id=task_name,
-        entry_point='envs.tarski.random_lq.env:Environment',
+        entry_point='yowie_gym.tarski.random_lq.env:Environment',
         max_episode_steps=200,
         kwargs={
             'fx': fx,

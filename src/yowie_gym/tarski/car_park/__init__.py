@@ -37,7 +37,7 @@ for x, y, theta, v in itertools.product(X0,Y0,theta0,v0):
     initial_states += [x0]
     register(\
         id=task_name,
-        entry_point='envs.tarski.car_park.env:Environment',
+        entry_point='yowie_gym.tarski.car_park.env:Environment',
         max_episode_steps=1000,
         kwargs={
             'I': [x0],
@@ -58,7 +58,7 @@ for x, y, theta, v in itertools.product(X0,Y0,theta0,v0):
 # MRJ: v2 are instances where the initial state is set randomly
 register(\
     id='CarPark-v2',
-    entry_point='envs.tarski.car_park.env:Environment',
+    entry_point='yowie_gym.tarski.car_park.env:Environment',
     max_episode_steps=1000,
     kwargs={
         'I': initial_states,
