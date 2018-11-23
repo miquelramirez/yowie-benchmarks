@@ -70,7 +70,8 @@ def make_task(k):
     # MRJ: RDDL does not support the abs() algebraic construct
     R = ite(abs(x()-gx()) > 0.0, u() * u() * 0.01, lang.constant(0.0, lang.Real))
     #R = u() * u() * 0.01
-    the_task.reward = Q + R
+    #MRJ: flip sign to turn minimisation into maximisation problem
+    the_task.reward = -1.0 * (Q + R)
 
     # fluent metadata
     the_task.declare_state_fluent(x(), 0.0)
