@@ -42,8 +42,8 @@ def make_task(k):
     the_task.requirements = [rddl.Requirements.CONTINUOUS, rddl.Requirements.REWARD_DET]
 
     the_task.parameters.discount = 1.0
-    the_task.parameters.horizon = 10
-    the_task.parameters.max_nondef_actions = 1
+    the_task.parameters.horizon = 20
+    the_task.parameters.max_nondef_actions = 'pos-inf'
 
     # variables
     x = lang.function('x', lang.Real)
@@ -54,12 +54,13 @@ def make_task(k):
     # non fluents
     dt = lang.function('dt', lang.Real)
     gx = lang.function('gx', lang.Real)
+    H = lang.function('H', lang.Real)
     # Perturbation distribution parameters
     mu_w = lang.function('mu_w', lang.Real)
     sigma_w = lang.function('sigma_w', lang.Real)
 
     # cpfs
-    the_task.add_cpfs(t(), t() + dt())
+    the_task.add_cpfs(t(), t() + 1.0)
     the_task.add_cpfs(v(), v() + dt() * u() + normal(mu_w(), sigma_w()))
     the_task.add_cpfs(x(), x() + dt() * v())
 
@@ -71,7 +72,8 @@ def make_task(k):
     # cost function
     Q = (x()-gx()) * (x()-gx())
     # MRJ: RDDL does not support the abs() algebraic construct
-    R = ite(abs(x()-gx()) > 0.0, u() * u() * 0.01, lang.constant(0.0, lang.Real))
+    zero = lang.constant(0.0, lang.Real)
+    R = ite(t() < H(), u() * u() * 0.01, zero)
     #R = u() * u() * 0.01
     #MRJ: flip sign to turn minimisation into maximisation problem
     the_task.reward = -1.0 * (Q + R)
@@ -79,10 +81,11 @@ def make_task(k):
     # fluent metadata
     the_task.declare_state_fluent(x(), 0.0)
     the_task.declare_state_fluent(t(), 0.0)
-    the_task.declare_state_fluent(v(), 1)
+    the_task.declare_state_fluent(v(), 0.0)
     the_task.declare_action_fluent(u(), 0.0)
     the_task.declare_non_fluent(dt(), 0.0)
     the_task.declare_non_fluent(gx(), 0.0)
+    the_task.declare_non_fluent(H(), 0.0)
 
     # definitions
     the_task.x0.setx(x(), 0.0)
@@ -91,6 +94,7 @@ def make_task(k):
     the_task.x0.setx(t(), 0.0)
     the_task.x0.setx(dt(), 0.5)
     the_task.x0.setx(gx(), 20.0)
+    the_task.x0.setx(H(), 20.0)
 
     return the_task
 
@@ -109,6 +113,7 @@ def main(args):
 
         task_k.x0.setx(x(), np.random.normal(0, 100.0))
         task_k.x0.setx(v(), np.random.normal(0, 1.0))
+
         the_writer = rddl.Writer(task_k)
         rddl_filename = os.path.join(args.output_prefix,\
             task_k.domain_name,\

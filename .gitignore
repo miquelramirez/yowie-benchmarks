@@ -19,3 +19,5 @@ __pycache__/
 *.exe
 *checkpoint.ipynb
 notebooks/None*.png
+
+*.rddl

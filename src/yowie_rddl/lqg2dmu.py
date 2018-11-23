@@ -37,13 +37,13 @@ def parse_arguments():
 def make_task(k):
 
     lang = tarski.language('lqg_nav_2d_multi_unit', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
-    the_task = Task( lang, 'lqg_nav_2d_multi_unit', 'instance_001')
+    the_task = Task( lang, 'lqg_nav_2d_multi_unit', 'instance_{0:06d}'.format(k))
 
     the_task.requirements = [rddl.Requirements.CONTINUOUS, rddl.Requirements.REWARD_DET]
 
     the_task.parameters.discount = 1.0
-    the_task.parameters.horizon = 10
-    the_task.parameters.max_nondef_actions = 1
+    the_task.parameters.horizon = 50
+    the_task.parameters.max_nondef_actions = 'pos-inf'
 
     vehicle = lang.sort('vehicle', lang.Object)
 
@@ -58,11 +58,14 @@ def make_task(k):
 
     # objects
     v001 = lang.constant('v001', vehicle)
+    v002 = lang.constant('v002', vehicle)
 
     # non fluents
     dt = lang.function('dt', lang.Real)
     gx = lang.function('gx', lang.Real)
     gy = lang.function('gy', lang.Real)
+    H = lang.function('H', lang.Real)
+
     # Perturbation distribution parameters
     mu_w = lang.function('mu_w', lang.Real)
     sigma_w = lang.function('sigma_w', lang.Real)
@@ -71,7 +74,7 @@ def make_task(k):
     v = lang.variable('v', vehicle)
 
     # cpfs
-    the_task.add_cpfs(t(), t() + dt())
+    the_task.add_cpfs(t(), t() + 1.0)
     the_task.add_cpfs(vx(v), vx(v) + dt() * ux(v) + normal(mu_w(), sigma_w()))
     the_task.add_cpfs(vy(v), vy(v) + dt() * uy(v) + normal(mu_w(), sigma_w()))
     the_task.add_cpfs(x(v), x(v) + dt() * vx(v))
@@ -87,7 +90,7 @@ def make_task(k):
     Q = sumterm(v, ((x(v)-gx()) * (x(v)-gx())) + ((y(v) - gy()) * (y(v) * gy())))
     # MRJ: RDDL does not support the abs() algebraic construct
     zero = lang.constant(0.0, lang.Real)
-    R = sumterm(v, ite(sqrt(vx(v)*vx(v) + vy(v)*vy(v)) > 0.0, (ux(v) * ux(v) * 0.01) + (uy(v) * uy(v) * 0.01), zero))
+    R = sumterm(v, ite(t() < H(), (ux(v) * ux(v) * 0.01) + (uy(v) * uy(v) * 0.01), zero))
     #R = u() * u() * 0.01
     the_task.reward = -1.0 *(Q + R)
 
@@ -101,13 +104,14 @@ def make_task(k):
     the_task.x0.setx(gy(), 20.0)
     the_task.x0.setx(mu_w(), 0.0)
     the_task.x0.setx(sigma_w(), 0.05)
+    the_task.x0.setx(H(), 50.0)
 
     # fluent metadata
     the_task.declare_state_fluent(x(v), 0.0)
     the_task.declare_state_fluent(y(v), 0.0)
     the_task.declare_state_fluent(t(), 0.0)
-    the_task.declare_interm_fluent(vx(v), 1)
-    the_task.declare_interm_fluent(vy(v), 1)
+    the_task.declare_state_fluent(vx(v), 0.0)
+    the_task.declare_state_fluent(vy(v), 0.0)
     the_task.declare_action_fluent(ux(v), 0.0)
     the_task.declare_action_fluent(uy(v), 0.0)
     the_task.declare_non_fluent(dt(), 0.0)
@@ -115,6 +119,7 @@ def make_task(k):
     the_task.declare_non_fluent(gy(), 0.0)
     the_task.declare_non_fluent(mu_w(), 0.0)
     the_task.declare_non_fluent(sigma_w(), 0.0)
+    the_task.declare_non_fluent(H(), 0.0)
 
     return the_task
 
@@ -135,11 +140,17 @@ def main(args):
         vy = task_k.L.get('vy')
 
         v001 = task_k.L.get('v001')
+        v002 = task_k.L.get('v002')
 
-        the_task.x0.setx(x(v001), 0.0)
-        the_task.x0.setx(y(v001), 0.0)
-        the_task.x0.setx(vx(v001), 0.0)
-        the_task.x0.setx(vy(v001), 0.0)
+        task_k.x0.setx(x(v001), np.random.normal(0, 10.0))
+        task_k.x0.setx(y(v001), np.random.normal(0, 10.0))
+        task_k.x0.setx(vx(v001), np.random.normal(0, 1.0))
+        task_k.x0.setx(vy(v001), np.random.normal(0, 1.0))
+
+        task_k.x0.setx(x(v002), np.random.normal(0, 10.0))
+        task_k.x0.setx(y(v002), np.random.normal(0, 10.0))
+        task_k.x0.setx(vx(v002), np.random.normal(0, 1.0))
+        task_k.x0.setx(vy(v002), np.random.normal(0, 1.0))
 
         the_writer = rddl.Writer(task_k)
         rddl_filename = os.path.join(args.output_prefix,\
