@@ -24,6 +24,7 @@ setup(
             'scipy',
             'gym>=0.10.0',
             'h5py',
+            'tqdm',
             'pybullet',
             'tarski',
             'dilithium'
