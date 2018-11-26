@@ -24,6 +24,7 @@ def parse_arguments():
     parser.add_argument('--num-instances', default=10, type=int, help='Number of random instances to generate')
     parser.add_argument('--seed', required=True, type=int, help='Seed for the random number generator')
     parser.add_argument('--output-prefix', required=False, default='.', help='Prefix path for output files')
+    parser.add_argument('--horizon', required=False, default=50, type=int, help='Horizon of the MDP')
 
     args = parser.parse_args()
 
@@ -34,7 +35,7 @@ def parse_arguments():
     return args
 
 
-def make_task(k):
+def make_task(k, args):
 
     lang = tarski.language('lqg_nav_2d_multi_unit', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
     the_task = Task( lang, 'lqg_nav_2d_multi_unit', 'instance_{0:06d}'.format(k))
@@ -42,7 +43,7 @@ def make_task(k):
     the_task.requirements = [rddl.Requirements.CONTINUOUS, rddl.Requirements.REWARD_DET]
 
     the_task.parameters.discount = 1.0
-    the_task.parameters.horizon = 50
+    the_task.parameters.horizon = args.horizon
     the_task.parameters.max_nondef_actions = 'pos-inf'
 
     vehicle = lang.sort('vehicle', lang.Object)
@@ -81,10 +82,16 @@ def make_task(k):
     the_task.add_cpfs(y(v), y(v) + dt() * vy(v))
 
     # constraints
-    the_task.add_constraint( forall(v, (ux(v) >= -1.0) & (ux(v) <= 1.0) & (uy(v) >= -1.0) & (uy(v) <= 1.0)), rddl.ConstraintType.ACTION)
+    the_task.add_constraint( forall(v, ux(v) >= -1.0), rddlConstraintType.ACTION)
+    the_task.add_constraint( forall(v, ux(v) <= 1.0), rddl.ConstraintType.ACTION)
+    the_task.add_constraint( forall(v, uy(v) >= -1.0), rddlConstraintType.ACTION)
+    the_task.add_constraint( forall(v, uy(v) <= 1.0), rddl.ConstraintType.ACTION)
     the_task.add_constraint( forall(v, (sqrt(vx(v)*vx(v) + vy(v)*vy(v)) <= 5.0)), rddl.ConstraintType.STATE)
-    the_task.add_constraint( forall(v, (x(v) >= -100.0) & (x(v) <= 100.0)), rddl.ConstraintType.STATE)
-    the_task.add_constraint( forall(v, (y(v) >= -100.0) & (y(v) <= 100.0)), rddl.ConstraintType.STATE)
+    the_task.add_constraint( forall(v, x(v) >= -100.0), rddl.ConstraintType.STATE)
+    the_task.add_constraint( forall(v, x(v) <= 100.0), rddl.ConstraintType.STATE)
+    the_task.add_constraint( forall(v, y(v) >= -100.0), rddl.ConstraintType.STATE)
+    the_task.add_constraint( forall(v, y(v) <= 100.0), rddl.ConstraintType.STATE)
+
 
     # cost function
     Q = sumterm(v, ((x(v)-gx()) * (x(v)-gx())) + ((y(v) - gy()) * (y(v) * gy())))
@@ -104,7 +111,7 @@ def make_task(k):
     the_task.x0.setx(gy(), 20.0)
     the_task.x0.setx(mu_w(), 0.0)
     the_task.x0.setx(sigma_w(), 0.05)
-    the_task.x0.setx(H(), 50.0)
+    the_task.x0.setx(H(), float(args.horizon))
 
     # fluent metadata
     the_task.declare_state_fluent(x(v), 0.0)
@@ -161,6 +168,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    print('lqg1d.py')
+    print('lqg2dmu.py')
     args = parse_arguments()
     main(args)

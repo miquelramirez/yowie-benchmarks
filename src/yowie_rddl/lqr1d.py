@@ -24,6 +24,7 @@ def parse_arguments():
     parser.add_argument('--num-instances', default=10, type=int, help='Number of random instances to generate')
     parser.add_argument('--seed', required=True, type=int, help='Seed for the random number generator')
     parser.add_argument('--output-prefix', required=False, default='.', help='Prefix path for output files')
+    parser.add_argument('--horizon', required=False, default=20, type=int, help='Horizon of the MDP')
 
     args = parser.parse_args()
 
@@ -42,7 +43,7 @@ def make_task(k):
     the_task.requirements = [rddl.Requirements.CONTINUOUS, rddl.Requirements.REWARD_DET]
 
     the_task.parameters.discount = 1.0
-    the_task.parameters.horizon = 10
+    the_task.parameters.horizon = args.horizon
     the_task.parameters.max_nondef_actions = 'pos-inf'
 
     # variables
@@ -62,9 +63,12 @@ def make_task(k):
     the_task.add_cpfs(x(), x() + dt() * v())
 
     # constraints
-    the_task.add_constraint( (u() >= -1.0) & (u() <= 1.0), rddl.ConstraintType.ACTION)
-    the_task.add_constraint( (v() >= -5.0) & (v() <= 5.0), rddl.ConstraintType.STATE)
-    the_task.add_constraint( (x() >= -100.0) & (x() <= 100.0), rddl.ConstraintType.STATE)
+    the_task.add_constraint( u() >= -1.0, rddlConstraintType.ACTION)
+    the_task.add_constraint( u() <= 1.0, rddl.ConstraintType.ACTION)
+    the_task.add_constraint( v() >= -5.0, rddl.ConstraintType.STATE)
+    the_task.add_constraint( v() <= 5.0, rddl.ConstraintType.STATE)
+    the_task.add_constraint( x() >= -100.0, rddl.ConstraintType.STATE)
+    the_task.add_constraint( x() <= 100.0, rddl.ConstraintType.STATE)
 
     # cost function
     Q = (x()-gx()) * (x()-gx())
@@ -90,7 +94,7 @@ def make_task(k):
     the_task.x0.setx(t(), 0.0)
     the_task.x0.setx(dt(), 0.5)
     the_task.x0.setx(gx(), 20.0)
-    the_task.x0.setx(H(), 20.0)
+    the_task.x0.setx(H(), float(args.horizon))
 
     return the_task
 
@@ -99,7 +103,7 @@ def main(args):
     np.random.seed(args.seed)
 
     for k in tqdm(range(args.num_instances)):
-        task_k = make_task(k)
+        task_k = make_task(k, args)
 
         if not os.path.exists(os.path.join(args.output_prefix, task_k.domain_name)):
             os.makedirs(os.path.join(args.output_prefix, task_k.domain_name))
