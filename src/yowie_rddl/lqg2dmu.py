@@ -135,7 +135,7 @@ def main(args):
     np.random.seed(args.seed)
 
     for k in tqdm(range(args.num_instances)):
-        task_k = make_task(k)
+        task_k = make_task(k, args)
 
         if not os.path.exists(os.path.join(args.output_prefix, task_k.domain_name)):
             os.makedirs(os.path.join(args.output_prefix, task_k.domain_name))
