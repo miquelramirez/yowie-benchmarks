@@ -90,6 +90,8 @@ def make_task(k, args):
     the_task.declare_action_fluent(u(), 0.0)
     the_task.declare_non_fluent(dt(), 0.0)
     the_task.declare_non_fluent(gx(), 0.0)
+    the_task.declare_non_fluent(mu_w(), 0.0)
+    the_task.declare_non_fluent(sigma_w(), 0.0)    
     the_task.declare_non_fluent(H(), 0.0)
 
     # definitions
@@ -99,6 +101,8 @@ def make_task(k, args):
     the_task.x0.setx(t(), 0.0)
     the_task.x0.setx(dt(), 0.5)
     the_task.x0.setx(gx(), 20.0)
+    the_task.x0.setx(mu_w(), 0.0)
+    the_task.x0.setx(sigma_w(), 0.05)    
     the_task.x0.setx(H(), float(args.horizon))
 
     return the_task
