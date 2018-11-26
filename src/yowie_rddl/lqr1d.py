@@ -35,7 +35,7 @@ def parse_arguments():
     return args
 
 
-def make_task(k):
+def make_task(k, args):
 
     lang = tarski.language('lqr_nav_1d', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL])
     the_task = Task( lang, 'lqr_nav_1d', 'instance_{0:06d}'.format(k))
@@ -63,7 +63,7 @@ def make_task(k):
     the_task.add_cpfs(x(), x() + dt() * v())
 
     # constraints
-    the_task.add_constraint( u() >= -1.0, rddlConstraintType.ACTION)
+    the_task.add_constraint( u() >= -1.0, rddl.ConstraintType.ACTION)
     the_task.add_constraint( u() <= 1.0, rddl.ConstraintType.ACTION)
     the_task.add_constraint( v() >= -5.0, rddl.ConstraintType.STATE)
     the_task.add_constraint( v() <= 5.0, rddl.ConstraintType.STATE)

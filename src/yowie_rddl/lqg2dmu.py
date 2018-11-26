@@ -82,9 +82,9 @@ def make_task(k, args):
     the_task.add_cpfs(y(v), y(v) + dt() * vy(v))
 
     # constraints
-    the_task.add_constraint( forall(v, ux(v) >= -1.0), rddlConstraintType.ACTION)
+    the_task.add_constraint( forall(v, ux(v) >= -1.0), rddl.ConstraintType.ACTION)
     the_task.add_constraint( forall(v, ux(v) <= 1.0), rddl.ConstraintType.ACTION)
-    the_task.add_constraint( forall(v, uy(v) >= -1.0), rddlConstraintType.ACTION)
+    the_task.add_constraint( forall(v, uy(v) >= -1.0), rddl.ConstraintType.ACTION)
     the_task.add_constraint( forall(v, uy(v) <= 1.0), rddl.ConstraintType.ACTION)
     the_task.add_constraint( forall(v, (sqrt(vx(v)*vx(v) + vy(v)*vy(v)) <= 5.0)), rddl.ConstraintType.STATE)
     the_task.add_constraint( forall(v, x(v) >= -100.0), rddl.ConstraintType.STATE)

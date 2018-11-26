@@ -67,7 +67,7 @@ def make_task(k, args):
 
     # constraints
     # constraints
-    the_task.add_constraint( u() >= -1.0, rddlConstraintType.ACTION)
+    the_task.add_constraint( u() >= -1.0, rddl.ConstraintType.ACTION)
     the_task.add_constraint( u() <= 1.0, rddl.ConstraintType.ACTION)
     the_task.add_constraint( v() >= -5.0, rddl.ConstraintType.STATE)
     the_task.add_constraint( v() <= 5.0, rddl.ConstraintType.STATE)
