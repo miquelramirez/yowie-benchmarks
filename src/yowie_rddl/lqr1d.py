@@ -74,9 +74,13 @@ def make_task(k, args):
     Q = (x()-gx()) * (x()-gx())
     # MRJ: RDDL does not support the abs() algebraic construct
     R = ite(t() < H(), u() * u() * 0.01, lang.constant(0.0, lang.Real))
+
+    V = ite(abs(v()) <= 5.0, 5.0 - abs(v()), lang.constant(0.0, lang.Real))
+    X = ite(abs(x()) <= 100.0, 100.0 - abs(x()), lang.constant(0.0, lang.Real))
+    
     #R = u() * u() * 0.01
     #MRJ: flip sign to turn minimisation into maximisation problem
-    the_task.reward = -1.0 * (Q + R)
+    the_task.reward = -1.0 * (Q + R + V + X)
 
     # fluent metadata
     the_task.declare_state_fluent(x(), 0.0)
@@ -93,7 +97,6 @@ def make_task(k, args):
     the_task.x0.setx(u(), 0.0)
     the_task.x0.setx(t(), 0.0)
     the_task.x0.setx(dt(), 0.5)
-    the_task.x0.setx(gx(), 20.0)
     the_task.x0.setx(H(), float(args.horizon))
 
     return the_task
@@ -110,9 +113,11 @@ def main(args):
 
         x = task_k.L.get('x')
         v = task_k.L.get('v')
+        gx = task_k.L.get('gx')
 
-        task_k.x0.setx(x(), np.random.normal(0, 100.0))
-        task_k.x0.setx(v(), np.random.normal(0, 1.0))
+        task_k.x0.setx(x(), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
+        task_k.x0.setx(v(), np.clip(np.random.normal(0, 1.0), -5.0, 5.0))
+        task_k.x0.setx(gx(), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
         the_writer = rddl.Writer(task_k)
         rddl_filename = os.path.join(args.output_prefix,\
             task_k.domain_name,\

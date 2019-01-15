@@ -92,14 +92,18 @@ def make_task(k, args):
     the_task.add_constraint( forall(v, y(v) >= -100.0), rddl.ConstraintType.STATE)
     the_task.add_constraint( forall(v, y(v) <= 100.0), rddl.ConstraintType.STATE)
 
-
     # cost function
     Q = sumterm(v, ((x(v)-gx()) * (x(v)-gx())) + ((y(v) - gy()) * (y(v) * gy())))
     # MRJ: RDDL does not support the abs() algebraic construct
     zero = lang.constant(0.0, lang.Real)
     R = sumterm(v, ite(t() < H(), (ux(v) * ux(v) * 0.01) + (uy(v) * uy(v) * 0.01), zero))
+
+    V = sumterm(v, ite((sqrt(vx(v)*vx(v) + vy(v)*vy(v)) <= 5.0), 5.0 - abs(sqrt(vx(v)*vx(v) + vy(v)*vy(v))), lang.constant(0.0, lang.Real)))
+    X = sumterm(v, ite(abs(x(v)) <= 100.0, 100.0 - abs(x(v)), lang.constant(0.0, lang.Real)))
+    Y = sumterm(v, ite(abs(y(v)) <= 100.0, 100.0 - abs(y(v)), lang.constant(0.0, lang.Real)))
+    
     #R = u() * u() * 0.01
-    the_task.reward = -1.0 *(Q + R)
+    the_task.reward = -1.0 * (Q + R + V + X + Y)    
 
     # definitions
 
@@ -107,8 +111,6 @@ def make_task(k, args):
     the_task.x0.setx(uy(v001), 0.0)
     the_task.x0.setx(t(), 0.0)
     the_task.x0.setx(dt(), 0.5)
-    the_task.x0.setx(gx(), 20.0)
-    the_task.x0.setx(gy(), 20.0)
     the_task.x0.setx(mu_w(), 0.0)
     the_task.x0.setx(sigma_w(), 0.05)
     the_task.x0.setx(H(), float(args.horizon))
@@ -149,23 +151,27 @@ def main(args):
         v001 = task_k.L.get('v001')
         v002 = task_k.L.get('v002')
 
-        task_k.x0.setx(x(v001), np.random.normal(0, 10.0))
-        task_k.x0.setx(y(v001), np.random.normal(0, 10.0))
+        gx = task_k.L.get('gx')
+        gy = task_k.L.get('gy')
+
+        task_k.x0.setx(x(v001), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
+        task_k.x0.setx(y(v001), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
         task_k.x0.setx(vx(v001), np.random.normal(0, 1.0))
         task_k.x0.setx(vy(v001), np.random.normal(0, 1.0))
 
-        task_k.x0.setx(x(v002), np.random.normal(0, 10.0))
-        task_k.x0.setx(y(v002), np.random.normal(0, 10.0))
+        task_k.x0.setx(x(v002), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
+        task_k.x0.setx(y(v002), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
         task_k.x0.setx(vx(v002), np.random.normal(0, 1.0))
         task_k.x0.setx(vy(v002), np.random.normal(0, 1.0))
+
+        task_k.x0.setx(gx(), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
+        task_k.x0.setx(gy(), np.clip(np.random.normal(0, 100.0), -100.0, 100.0))
 
         the_writer = rddl.Writer(task_k)
         rddl_filename = os.path.join(args.output_prefix,\
             task_k.domain_name,\
             '{}.rddl'.format(task_k.instance_name))
         the_writer.write_model(rddl_filename)
-
-
 
 if __name__ == '__main__':
     print('lqg2dmu.py')
