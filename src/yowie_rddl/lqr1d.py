@@ -124,8 +124,6 @@ def main(args):
             '{}.rddl'.format(task_k.instance_name))
         the_writer.write_model(rddl_filename)
 
-
-
 if __name__ == '__main__':
     print('lqr1d.py')
     args = parse_arguments()

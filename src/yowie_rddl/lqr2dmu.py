@@ -1,5 +1,5 @@
 """
-    2D Multi-units LQG Navigation problems
+    2D Multi-units LQR Navigation problems
 
 """
 
@@ -20,7 +20,7 @@ from tarski.syntax.arithmetic.random import *
 from tarski.rddl import Task
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='2D Multi-units LQG problem generators')
+    parser = argparse.ArgumentParser(description='2D Multi-units LQR problem generators')
     parser.add_argument('--num-instances', default=10, type=int, help='Number of random instances to generate')
     parser.add_argument('--seed', required=True, type=int, help='Seed for the random number generator')
     parser.add_argument('--output-prefix', required=False, default='.', help='Prefix path for output files')
@@ -37,8 +37,8 @@ def parse_arguments():
 
 def make_task(k, args):
 
-    lang = tarski.language('lqg_nav_2d_multi_unit', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
-    the_task = Task( lang, 'lqg_nav_2d_multi_unit', 'instance_{0:06d}'.format(k))
+    lang = tarski.language('lqr_nav_2d_multi_unit', [Theory.EQUALITY, Theory.ARITHMETIC, Theory.SPECIAL, Theory.RANDOM])
+    the_task = Task( lang, 'lqr_nav_2d_multi_unit', 'instance_{0:06d}'.format(k))
 
     the_task.requirements = [rddl.Requirements.CONTINUOUS, rddl.Requirements.REWARD_DET]
 
@@ -76,8 +76,8 @@ def make_task(k, args):
 
     # cpfs
     the_task.add_cpfs(t(), t() + 1.0)
-    the_task.add_cpfs(vx(v), vx(v) + dt() * ux(v) + normal(mu_w(), sigma_w()))
-    the_task.add_cpfs(vy(v), vy(v) + dt() * uy(v) + normal(mu_w(), sigma_w()))
+    the_task.add_cpfs(vx(v), vx(v) + dt() * ux(v))
+    the_task.add_cpfs(vy(v), vy(v) + dt() * uy(v))
     the_task.add_cpfs(x(v), x(v) + dt() * vx(v))
     the_task.add_cpfs(y(v), y(v) + dt() * vy(v))
 
@@ -182,6 +182,6 @@ def main(args):
         the_writer.write_model(rddl_filename)
 
 if __name__ == '__main__':
-    print('lqg2dmu.py')
+    print('lqr2dmu.py')
     args = parse_arguments()
     main(args)
